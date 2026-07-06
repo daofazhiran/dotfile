@@ -1,0 +1,11 @@
+require("plugins.telescope")
+require("plugins.nvim-tree")
+require("plugins.vim-tmux-navigator")
+require("plugins.gitsigns")
+require("plugins.diffview")
+require("plugins.lsp")
+require("plugins.color-scheme")
+
+require("plugins.nvim-dap")
+require("plugins.nvim-dap-ui")
+require("plugins.nvim-dap-virtual-text")

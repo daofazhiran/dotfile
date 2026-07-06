@@ -1,2 +1,2 @@
 # dotfile
-Configuration for Mac
+dotfiles of terminal, nvim / tmux etc.
