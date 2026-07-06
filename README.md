@@ -1,0 +1,2 @@
+# dotfile
+Configuration for Mac
