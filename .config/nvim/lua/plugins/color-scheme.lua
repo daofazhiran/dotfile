@@ -13,7 +13,7 @@ require('kanagawa').setup({
 --  functionStyle = { bold = true },
 
   background = {
-    dart = "wave",
+    dark = "wave",
     light = "lotus"
   },
 })

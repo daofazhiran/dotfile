@@ -51,10 +51,9 @@ vim.api.nvim_create_autocmd('LspAttach', {
     local bufnr = args.buf
     local client = vim.lsp.get_client_by_id(args.data.client_id)
 
-    -- Enable Neovim 0.12's lightning-fast native omni-completion UI
-    if client and client:supports_method('textDocument/completion') then
-      vim.lsp.completion.enable(true, client.id, bufnr, { autTrigger = true })
-    end
+    -- Native LSP completion UI is disabled: blink.cmp talks to the LSP
+    -- servers directly (see plugins/blink-cmp.lua). This also retires the
+    -- misspelled `autTrigger` option that used to be silently ignored here.
 
     local opts = { buffer = args.buf }
 

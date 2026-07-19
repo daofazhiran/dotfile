@@ -49,4 +49,7 @@ vim.pack.add({
     src = 'https://github.com/theHamsta/nvim-dap-virtual-text.git',
     name = 'nvim-dap-virtual-text',
   },
+
+  -- Core R functionality
+  { src = "https://github.com/R-nvim/R.nvim" },
 })

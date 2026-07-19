@@ -1,5 +1,9 @@
 {
   "plugins": {
+    "R.nvim": {
+      "rev": "c56ebe0f8445e251673981c40ac2d74659ecd6ed",
+      "src": "https://github.com/R-nvim/R.nvim"
+    },
     "blink.cmp": {
       "rev": "78336bc89ee5365633bcf754d93df01678b5c08f",
       "src": "https://github.com/saghen/blink.cmp",
@@ -16,14 +20,6 @@
     "kanagawa.nvim": {
       "rev": "bb85e4bfc8d89b0e62c8fa53ccdd13d12e2f77b3",
       "src": "https://github.com/rebelot/kanagawa.nvim"
-    },
-    "mini.files": {
-      "rev": "0da2aa91bd89418671cde22a9d4a8a4f3035bb2d",
-      "src": "https://github.com/echasnovski/mini.files"
-    },
-    "neo-tree.nvim": {
-      "rev": "f1deac7ecec88c28a250d890ba7bb35843e69cbd",
-      "src": "https://github.com/nvim-neo-tree/neo-tree.nvim"
     },
     "nvim-dap": {
       "rev": "9e848e09a697ee95302a3ef2dd43fd6eb709e570",
@@ -53,10 +49,6 @@
       "rev": "dfbfaa967a6f7ec50789bead7ef87e336c1fa63c",
       "src": "https://github.com/nvim-tree/nvim-web-devicons"
     },
-    "oil.nvim": {
-      "rev": "07f80ad645895af849a597d1cac897059d89b686",
-      "src": "https://github.com/stevearc/oil.nvim"
-    },
     "plenary.nvim": {
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
       "src": "https://github.com/nvim-lua/plenary.nvim"
@@ -68,10 +60,6 @@
     "telescope.nvim": {
       "rev": "427b576c16792edad01a92b89721d923c19ad60f",
       "src": "https://github.com/nvim-telescope/telescope.nvim"
-    },
-    "vague.nvim": {
-      "rev": "4ad623881eb69b6bc0c61a93a90e528d1d4f91da",
-      "src": "https://github.com/vague2k/vague.nvim"
     },
     "vim-tmux-navigator": {
       "rev": "e41c431a0c7b7388ae7ba341f01a0d217eb3a432",

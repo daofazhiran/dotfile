@@ -10,7 +10,8 @@ require("blink.cmp").setup({
     providers = {
       lsp = {
         -- Don't show LSP suggestions inside comments
-        fallback_for = { 'buffer' },
+        -- (blink.cmp 1.x: `fallback_for` was replaced by `fallbacks`)
+        fallbacks = { 'buffer' },
       },
       buffer = {
         -- Only show buffer words after typing 3 characters (reduces noise)
@@ -36,7 +37,7 @@ require("blink.cmp").setup({
           { "label", "label_description", gap = 1 },
           { "kind_icon", "kind" }
         },
-        treesitter = true
+        treesitter = { "lsp" }
       },
     },
 
@@ -50,7 +51,7 @@ require("blink.cmp").setup({
     ghost_text = { enabled = true },
   },
 
-  apperance = {
+  appearance = {
     -- Use nvim-cmp's color highlights if you have a theme that supports it,
     -- otherwise blink has its own native highlights.
     use_nvim_cmp_as_default = true,
