@@ -79,19 +79,36 @@ require("r").setup({
                     { buffer = true, desc = "R browser: call stack (where)" })
 
                 local function r_dap_continue()
-                    local setup_ok, dap_r = pcall(require, "plugins.dap_r")
-                    if not setup_ok then
+                    local ok, dap_r = pcall(require, "plugins.dap_r")
+                    if not ok then
                         vim.notify("dap_r: 配置文件加载失败", vim.log.levels.ERROR)
                         return
                     end
-                    if dap_r.setup() then
-                        require("dap").continue()
-                    end
+                    dap_r.continue()
                 end
                 vim.keymap.set("n", "<leader>dd", r_dap_continue,
-                    { buffer = true, desc = "R DAP: start/select" })
-                vim.keymap.set("n", "<leader>dc", r_dap_continue,
-                    { buffer = true, desc = "R DAP: continue/start" })
+                    { buffer = true, desc = "R DAP: start package/continue" })
+                vim.keymap.set("n", "<leader>dc", function()
+                    local dap = require("dap")
+                    if dap.session() then dap.continue() end
+                end, { buffer = true, desc = "R DAP: continue" })
+                -- DAP step/terminate buffer-local 映射（防 R.nvim 内部映射干扰）
+                vim.keymap.set("n", "<leader>dn", function()
+                    local dap = require("dap")
+                    if dap.session() then dap.step_over() end
+                end, { buffer = true, desc = "R DAP: step over" })
+                vim.keymap.set("n", "<leader>di", function()
+                    local dap = require("dap")
+                    if dap.session() then dap.step_into() end
+                end, { buffer = true, desc = "R DAP: step into" })
+                vim.keymap.set("n", "<leader>do", function()
+                    local dap = require("dap")
+                    if dap.session() then dap.step_out() end
+                end, { buffer = true, desc = "R DAP: step out" })
+                vim.keymap.set("n", "<leader>dq", function()
+                    local dap = require("dap")
+                    if dap.session() then dap.terminate() end
+                end, { buffer = true, desc = "R DAP: terminate" })
             end
         end,
     },
