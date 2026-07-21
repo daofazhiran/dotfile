@@ -377,17 +377,67 @@ function M.setup()
     end
   end
 
-  -- 会话结束即回收 R 进程
+  -- 会话结束即回收 R 进程，并清掉 nvim-dap-virtual-text 在所有 buffer 上
+  -- 残留的 inline 文字。
+  --
+  -- 注意：dap.listeners.after.event_terminated / event_exited / disconnect
+  -- 在 R DAP 这条路上不可靠。dap.terminate() 在 supportsTerminateRequest 为
+  -- nil 时走的是 lsession:disconnect()，vscDebugger 收到 disconnect 请求后
+  -- 直接 exit R 进程，不会回 DAP 响应；adapter 也不主动发 terminated/exited
+  -- 事件。所以 dap 的 after-listener 在 R 配置下不会触发，
+  -- 必须从键位这一层主动清理。
+  local function clear_virtual_text()
+    -- nvim-dap-virtual-text 的源码在 lua/nvim-dap-virtual-text/virtual_text.lua，
+    -- 没有 init.lua：require("nvim-dap-virtual-text") 拿到的是个空表，必须
+    -- 用 require("nvim-dap-virtual-text.virtual_text") 才能拿到 M.clear_virtual_text。
+    local ok, vt = pcall(require, "nvim-dap-virtual-text.virtual_text")
+    if ok and vt and vt.clear_virtual_text then
+      vt.clear_virtual_text()
+      return
+    end
+    vim.notify(
+      string.format("dap_r: clear_virtual_text require failed (ok=%s, has_clear=%s)",
+        tostring(ok), tostring(vt and vt.clear_virtual_text)),
+      vim.log.levels.WARN
+    )
+  end
+
+  function M.terminate()
+    -- 1. 先清掉虚拟文字，避免 dap.terminate 把 R 关掉后 nvim 这一侧再也
+    --    收不到任何信号，导致虚拟文字挂在原 buffer 上。
+    clear_virtual_text()
+    -- 2. 通知 adapter 走 disconnect；vscDebugger 会排队 quit(save="no")。
+    pcall(require("dap").terminate)
+    -- 3. 兜底：3 秒后若 R 还在就强杀。
+    vim.defer_fn(stop_r_process, 3000)
+  end
+
+  -- 兼容：保留 after-listener；若以后切到 supportsTerminateRequest=true 的
+  -- adapter（比如 lldb-vscode），这些钩子能起作用，就当双保险。
   dap.listeners.after.event_terminated["dap_r.cleanup"] = function()
     stop_r_process()
+    clear_virtual_text()
   end
   dap.listeners.after.event_exited["dap_r.cleanup"] = function()
     stop_r_process()
+    clear_virtual_text()
   end
   dap.listeners.after.disconnect["dap_r.cleanup"] = function()
-    -- disconnectRequest 会让 vscDebugger 排队输入 quit(save="no")；兜底强杀
     vim.defer_fn(stop_r_process, 3000)
+    vim.defer_fn(clear_virtual_text, 3500)
   end
+
+  -- 在 R 文件的 buffer 上把 <Space>dq 重定向到 M.terminate：先清虚拟文字，
+  -- 再走 dap.terminate，再兜底强杀 R 进程。其他语言的 buffer 不受影响，
+  -- 仍走 keymaps.lua 中定义的 dap.terminate。
+  vim.api.nvim_create_augroup("dap_r_keymap", { clear = true })
+  vim.api.nvim_create_autocmd("FileType", {
+    group = "dap_r_keymap",
+    pattern = "r",
+    callback = function()
+      vim.keymap.set("n", "<Space>dq", M.terminate, { buffer = true, desc = "Debug: Quit (R)" })
+    end,
+  })
 
   configured = true
   vim.notify("dap_r: vscDebugger adapter ready", vim.log.levels.INFO)
