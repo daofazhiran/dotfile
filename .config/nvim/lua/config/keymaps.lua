@@ -31,6 +31,16 @@ keymap.set("n", "<leader>gc", "<cmd>DiffviewClose<CR>", { desc = "Close Diffview
 keymap.set("n", "<leader>gf", "<cmd>DiffviewFileHistory %<CR>", { desc = "Diffview History (Current File)" })
 keymap.set("n", "<leader>gF", "<cmd>DiffviewFileHistory<CR>", { desc = "Diffview History (Whole Repo)" })
 
+-- Edition 3: Highlighting
+keymap.set("n", "<leader>h", ":nohlsearch<CR>")
+
+-- Buffer operation
+keymap.set("i", "jjw", "<ESC>:w<CR>", { desc = "Exit INSERT mode and save buffer" })
+keymap.set("n", "<leader>w", "<cmd>bp|bd#<CR>", { desc = "Close Buffer; Retain Split" })
+
+keymap.set("n", "<TAB>", "<cmd>bn<CR>", { desc = "Buffer: next" })
+keymap.set("n", "<S-TAB>", "<cmd>bp<CR>", { desc = "Buffer: prev" })
+
 -- Debug (通用)
 local dap = require("dap")
 local dapui = require("dapui")
@@ -66,7 +76,7 @@ keymap.set("n", "zR", "zR", { desc = "Open all folds in file" })
 keymap.set("n", "zM", "zM", { desc = "Close all folds in file" })
 
 -- Smart toggle with <Tab> (popular alternative)
-keymap.set("n", "<Tab>", "za", { desc = "Toggle fold" })
+-- keymap.set("n", "<Tab>", "za", { desc = "Toggle fold" })
 
 -- Move between folds
 keymap.set("n", "]z", "]z", { desc = "Move to next fold" })

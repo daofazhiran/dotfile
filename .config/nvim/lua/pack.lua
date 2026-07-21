@@ -22,6 +22,7 @@ vim.pack.add({
 
 -- Util
   { src = "https://github.com/christoomey/vim-tmux-navigator" },
+  -- { src = "https://github.com/akinsho/bufferline.nvim" },
 
 -- UI Components
   -- Navigation
