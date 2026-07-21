@@ -64,6 +64,72 @@ require("r").setup({
                     end)
                 end, { buffer = true, desc = "R: usethis::use_r" })
 
+                -- ─── R 包内 help：跳到 man/<cword>.Rd 源码（任意 R buffer 都行）───
+                -- 全局键，不限定 buffer，便于写哪都行
+                vim.keymap.set("n", "<leader>Rd", function()
+                    local word = vim.fn.expand("<cword>")
+                    if word == "" then
+                        vim.notify("<leader>Rd: 光标下没有单词", vim.log.levels.WARN)
+                        return
+                    end
+                    -- 向上找 DESCRIPTION（任何 R 包项目结构都识别）
+                    local pkg_root = vim.fs.find("DESCRIPTION", {
+                        upward = true,
+                        path = vim.fn.expand("%:p"),
+                    })[1]
+                    if not pkg_root then
+                        vim.notify("<leader>Rd: 当前文件不在 R 包项目内（找不到 DESCRIPTION）",
+                            vim.log.levels.ERROR)
+                        return
+                    end
+                    local rd_file = vim.fs.joinpath(
+                        vim.fs.dirname(pkg_root), "man", word .. ".Rd"
+                    )
+                    if vim.uv.fs_stat(rd_file) then
+                        vim.cmd("edit " .. vim.fn.fnameescape(rd_file))
+                    else
+                        vim.notify(
+                            string.format("%s 不存在（试 \\pD 先 devtools::document）", rd_file),
+                            vim.log.levels.WARN
+                        )
+                    end
+                end, { desc = "R pkg: jump to man/<cword>.Rd" })
+
+                -- ─── R 包函数列表：telescope 模糊搜 man/*.Rd ───
+                -- 复用 <leader>Rd 的"向上找 DESCRIPTION"逻辑定位项目根
+                vim.keymap.set("n", "<leader>R?", function()
+                    local pkg_root = vim.fs.find("DESCRIPTION", {
+                        upward = true,
+                        path = vim.fn.expand("%:p"),
+                    })[1]
+                    if not pkg_root then
+                        vim.notify(
+                            "<leader>R?: 当前文件不在 R 包项目内（找不到 DESCRIPTION）",
+                            vim.log.levels.ERROR
+                        )
+                        return
+                    end
+                    local man_dir = vim.fs.joinpath(
+                        vim.fs.dirname(pkg_root), "man"
+                    )
+                    if not vim.uv.fs_stat(man_dir) then
+                        vim.notify(
+                            string.format("%s 不存在（先跑 \\pD 生成 man/）", man_dir),
+                            vim.log.levels.WARN
+                        )
+                        return
+                    end
+                    require("telescope.builtin").find_files({
+                        cwd = man_dir,
+                        prompt_title = "R pkg funcs >>",
+                        -- fd 的 --glob 不接受等号，必须空格分隔
+                        find_command = {
+                            "fd", "--type=f", "--hidden",
+                            "--glob", "*.Rd", man_dir,
+                        },
+                    })
+                end, { desc = "R pkg: telescope over man/*.Rd" })
+
                 -- ─── R 调试：browser() 与 DAP 独立命名空间 ───
                 vim.keymap.set("n", "<leader>bn", function() rsend("n") end,
                     { buffer = true, desc = "R browser: step over" })
